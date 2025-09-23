@@ -1,7 +1,7 @@
 """
 TP2 - Exercice 1 : Gestion du Menu
 """
-
+allo
 def analyser_menu(menu):
     """
     Analyse le menu du restaurant pour extraire des statistiques importantes.
