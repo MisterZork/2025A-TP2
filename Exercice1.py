@@ -2,7 +2,6 @@
 TP2 - Exercice 1 : Gestion du Menu
 """
 def analyser_menu(menu):
-    allo
     """
     Analyse le menu du restaurant pour extraire des statistiques importantes.
     
@@ -19,11 +18,37 @@ def analyser_menu(menu):
     
     # TODO: Calculer le plat le plus rentable (ratio popularité/temps_preparation)
     # Attention: gérer le cas où temps_preparation pourrait être 0
-    
+    liste_de_ratio = []
+    for value in menu:
+        if menu[value][1] == 0:
+            ratio = menu[value][2]/1
+            liste_de_ratio.append(ratio)
+        else:
+            ratio = menu[value][2]/menu[value][1]
+            liste_de_ratio.append(ratio)
+    meilleur_ratio = max(liste_de_ratio)
+    for x in menu:
+       
+       if menu[x][2]/1 == meilleur_ratio:  
+            plat_plus_rentable = x 
+       elif menu[x][2]/menu[x][1] == meilleur_ratio:
+            plat_plus_rentable = x 
+
     # TODO: Calculer le prix moyen du menu
-    
+    somme = 0
+    for k in menu:
+        somme = somme + menu[k][0]
+    prix_moyen = somme/len(menu)
     # TODO: Calculer le temps de préparation moyen
-    
+    somme_temps = 0 
+    for f in menu: 
+        somme_temps = somme_temps + menu[k][1]
+    temps_moyen = somme_temps/len(menu)
+    stats = {
+    "plat_plus_rentable": plat_plus_rentable,
+    "prix_moyen": prix_moyen,
+    "temps_moyen": temps_moyen
+    }
     return stats
 
 
@@ -39,10 +64,27 @@ def filtrer_menu_par_categorie(menu, categories):
         dict: Menu organisé par catégories
     """
     menu_filtre = {}
-    
     # TODO: Organiser les plats par catégorie
     # Exemple: {'entrées': [...], 'plats': [...], 'desserts': [...]}
-    
+    liste_entrée = []
+    liste_plat = []
+    liste_desserts = []
+    liste_autres = []
+    for key in categories: 
+        if categories[key] == "entrées":
+            liste_entrée.append(key)
+        elif categories[key] == "plats":
+            liste_plat.append(key)
+        elif categories[key] == "desserts":
+            liste_desserts.append(key)
+        else: 
+            liste_autres.append(key)
+    menu_filtre = {
+        "entrées" : liste_entrée,
+        "plats" : liste_plat,
+        "desserts" : liste_desserts, 
+        "sans_catégories" : liste_autres
+    }
     return menu_filtre
 
 
@@ -61,8 +103,14 @@ def calculer_profit(menu, ventes_jour):
     
     # TODO: Calculer le profit total
     # profit = somme(prix_plat * nombre_ventes) pour chaque plat vendu
-    
+    for a in menu:
+        for plat, nombre_ventes in ventes_jour.items():
+            if a == plat:
+                profit = profit + (menu[a][0]*ventes_jour[a])
+            else: 
+                continue
     return profit
+
 
 
 if __name__ == '__main__':
