@@ -196,6 +196,26 @@ class TestExercice3(unittest.TestCase):
         # Pâtes: min(100/10, 25/2) = min(10, 12) = 10
         self.assertEqual(possibles['Pâtes'], 10)
 
+    def test_optimiser_achats(self):
+        """Test optimisation des achats avec budget limité"""
+        previsions = {'Pizza': 10, 'Pâtes': 5}
+        budget = 50.0
+    
+        achats = ex3.optimiser_achats(
+            self.inventaire, self.recettes, previsions, budget
+        )   
+    
+        # Vérifier que le budget n'est pas dépassé
+        cout_total = sum(
+            achats.get(ing, 0) * cout 
+            for ing, cout in {'tomates': 0.5, 'fromage': 2.0, 'pâtes': 1.0, 'sauce': 1.5}.items()
+        )
+        self.assertLessEqual(cout_total, budget)
+    
+        # Vérifier que les quantités sont positives
+        for quantite in achats.values():
+            self.assertGreaterEqual(quantite, 0)
+
 
 class TestExercice4(unittest.TestCase):
     """Tests pour l'exercice 4 : Système de réservation"""
