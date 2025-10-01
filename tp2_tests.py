@@ -196,6 +196,26 @@ class TestExercice3(unittest.TestCase):
         # Pâtes: min(100/10, 25/2) = min(10, 12) = 10
         self.assertEqual(possibles['Pâtes'], 10)
 
+    def test_optimiser_achats(self):
+        """Test optimisation des achats avec budget limité"""
+        previsions = {'Pizza': 10, 'Pâtes': 5}
+        budget = 50.0
+        
+        achats = ex3.optimiser_achats(
+            self.inventaire, self.recettes, previsions, budget
+         )   
+        
+         # Vérifier que le budget n'est pas dépassé
+        cout_total = sum(
+             achats.get(ing, 0) * cout 
+             for ing, cout in {'tomates': 0.5, 'fromage': 2.0, 'pâtes': 1.0, 'sauce': 1.5}.items()
+        )
+        self.assertLessEqual(cout_total, budget)
+        
+        # Vérifier que les quantités sont positives
+        for quantite in achats.values():
+             self.assertGreaterEqual(quantite, 0)
+
 
 class TestExercice4(unittest.TestCase):
     """Tests pour l'exercice 4 : Système de réservation"""
@@ -333,6 +353,53 @@ class TestExercice5(unittest.TestCase):
         self.assertIn('froid', problemes)
         self.assertEqual(problemes['lent'], 2)
         self.assertEqual(problemes['froid'], 2)
+        
+    def test_generer_rapport_satisfaction(self):
+        """Test génération rapport complet"""
+        categories = {
+            'positifs': [("Super!", 8), ("Excellent!", 9)],
+            'neutres': [("Correct", 5)],
+            'negatifs': [("Mauvais", 2)]
+        }
+        problemes = {'lent': 3, 'froid': 2}
+        
+        rapport = ex5.generer_rapport_satisfaction(categories, problemes)
+        
+        # Vérifier la structure du rapport
+        self.assertIn('satisfaction_moyenne', rapport)
+        self.assertIn('distribution', rapport)
+        self.assertIn('points_forts', rapport)
+        self.assertIn('points_amelioration', rapport)
+        
+        # Vérifier la satisfaction moyenne: (8+9+5+2)/4 = 6.0
+        self.assertAlmostEqual(rapport['satisfaction_moyenne'], 6.0, places=1)
+        
+        # Vérifier la distribution
+        self.assertIn('positifs', rapport['distribution'])
+        self.assertIn('neutres', rapport['distribution'])
+        self.assertIn('negatifs', rapport['distribution'])
+        
+        # Plus de positifs que négatifs -> doit avoir des points forts
+        self.assertEqual(len(rapport['points_forts']), 2)
+        self.assertEqual(rapport['points_forts'], ['Service apprécié', 'Qualité reconnue'])
+        
+        # Top 3 problèmes (ou moins si moins disponibles)
+        self.assertLessEqual(len(rapport['points_amelioration']), 3)
+        self.assertEqual(rapport['points_amelioration'], ['lent', 'froid'])
+    
+    def test_generer_rapport_majorite_negative(self):
+        """Test rapport avec majorité négative (pas de points forts)"""
+        categories = {
+            'positifs': [("Ok", 7)],
+            'neutres': [],
+            'negatifs': [("Mauvais", 2), ("Terrible", 1), ("Nul", 3)]
+        }
+        problemes = {'lent': 5}
+        
+        rapport = ex5.generer_rapport_satisfaction(categories, problemes)
+        
+        # Plus de négatifs que positifs -> pas de points forts
+        self.assertEqual(len(rapport['points_forts']), 0)
     
     def test_calculer_tendance(self):
         """Test calcul de tendance"""
