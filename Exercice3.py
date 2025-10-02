@@ -15,10 +15,13 @@ def verifier_disponibilite(inventaire, recette):
     """
     peut_preparer = True
     ingredients_manquants = []
-    
     # TODO: Vérifier pour chaque ingrédient de la recette
     # s'il est disponible en quantité suffisante dans l'inventaire
-    
+    for ing, qte_requise in recette.items():
+        qte_dispo = inventaire.get(ing,0)
+        if qte_dispo < qte_requise:
+            ingredients_manquants.append(ing)
+    peut_preparer = (len(ingredients_manquants) == 0)
     return peut_preparer, ingredients_manquants
 
 
@@ -38,7 +41,13 @@ def mettre_a_jour_inventaire(inventaire, recette, quantite=1):
     
     # TODO: Soustraire les ingrédients utilisés de l'inventaire
     # Multiplier par la quantité si plusieurs portions
-    
+    for ingredient, qt_utilisée in recette.items(): 
+        if ingredient in nouvel_inventaire:
+            quantité_finale = inventaire.get(ingredient) - (qt_utilisée*quantite)
+            nouvel_inventaire[ingredient] = max(0,quantité_finale)
+        else: 
+            continue
+
     return nouvel_inventaire
 
 
@@ -58,7 +67,10 @@ def generer_alertes_stock(inventaire, seuil=10):
     
     # TODO: Identifier les ingrédients avec stock < seuil
     # Suggérer une quantité à commander (ex: 50 unités - stock_actuel)
-    
+    for ings, quantité in inventaire.items(): 
+        if quantité < seuil: 
+            a_commander = max(0, quantite_standard - quantité)
+            alertes[ings] = (quantité ,a_commander)
     return alertes
 
 
@@ -74,12 +86,18 @@ def calculer_commandes_possibles(inventaire, menu_recettes):
         dict: {nom_plat: nombre_portions_possibles}
     """
     commandes_possibles = {}
-    
+
     # TODO: Pour chaque plat, calculer combien de portions peuvent être faites
     # Le minimum est déterminé par l'ingrédient le plus limitant (on pourra initialiser une variable nb_portions = infini dans un premier temps)
-    
+    for plats in menu_recettes:
+        min_portion = float("inf")
+        for ingredients, quantite in inventaire.items():
+            besoin_par_portion = menu_recettes[plats].get(ingredients, 0)
+            if besoin_par_portion > 0: 
+                portion = inventaire[ingredients]//besoin_par_portion
+                min_portion = min(portion,min_portion)
+                commandes_possibles[plats] = min_portion 
     return commandes_possibles
-
 
 def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
     """
@@ -100,9 +118,21 @@ def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
     # TODO: Calculer les besoins totaux selon les prévisions
     # Soustraire l'inventaire actuel
     # Optimiser selon le budget disponible (prioriser les ingrédients critiques)
-    
-    return liste_achats
+    liste_besoin_achat = []
+    liste_ingredients = []
 
+    for plat in menu_recettes:
+        for ingredients, quantite in menu_recettes[plat].items():
+            quantite_ingredient = menu_recettes[plat].get(ingredients,0)
+            if quantite_ingredient > 0: 
+                besoin_totaux = quantite_ingredient * previsions_ventes[plat]
+                besoin_achat = besoin_totaux - quantite
+            
+
+
+        
+       
+    return liste_achats
 
 if __name__ == '__main__':
     # Test de l'inventaire

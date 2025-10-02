@@ -170,6 +170,7 @@ Fonctions à compléter (`TODO`) :
 - `generer_rapport_satisfaction(categories, frequence_problemes)`  
   - Calculer la satisfaction moyenne.
   - Calculer la distribution en pourcentages (positifs / neutres / négatifs).
+  - S'il y a plus de commentaires positifs que négatifs, le champ 'points forts' sera simplement la liste ['Service apprécié', 'Qualité reconnue']. Sinon, retournez une liste vide [].
   - Identifier les 3 principaux points d'amélioration (3 mots-clés négatifs les plus fréquents).
 
 - `calculer_tendance(historique_scores)`  

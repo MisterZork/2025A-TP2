@@ -19,7 +19,7 @@ def calculer_priorite(commande):
     
     # TODO: Implémenter l'algorithme de priorité
     # Score = (temps_attente × 2) + (nombre_items × 1) + (client_vip × 10)
-    
+    score = (commande["temps_attente"]*2) +(commande["nombre_items"]*1) + (commande["client_vip"]*10)
     return score
 
 
@@ -36,7 +36,11 @@ def trier_commandes(liste_commandes):
     """
     # TODO: Implémenter un algorithme de tri (suggestion: tri à bulles)
     # Les commandes avec le score le plus élevé doivent être en premier
-    
+    c = len(liste_commandes)
+    for d in range(c):
+        for e in range(c-d-1):
+            if calculer_priorite(liste_commandes[e]) < calculer_priorite(liste_commandes[e+1]):
+                liste_commandes[e],liste_commandes[e+1] = liste_commandes[e+1],liste_commandes[e]
     return liste_commandes
 
 
@@ -51,10 +55,16 @@ def estimer_temps_total(liste_commandes_triee):
         dict: Temps total et temps moyen par commande
     """
     temps_stats = {}
-    
     # TODO: Calculer le temps total et moyen
     # Chaque item prend en moyenne 3 minutes à préparer
-    
+    temps_total = 0
+    for i in range(len(liste_commandes_triee)):
+        temps_total = temps_total + (liste_commandes_triee[i]["nombre_items"]*3)
+    temps_moyen = (temps_total/len(liste_commandes_triee))
+    temps_stats = {
+        "temps_total" : temps_total,
+        "temps_moyen" : temps_moyen 
+        }
     return temps_stats
 
 
@@ -72,6 +82,10 @@ def identifier_commandes_urgentes(liste_commandes, seuil_attente=30):
     commandes_urgentes = []
     
     # TODO: Identifier les commandes avec temps_attente > seuil
+    for a in range(len(liste_commandes)):
+        temps_attente = liste_commandes[a]["temps_attente"] 
+        if temps_attente > seuil_attente: 
+            commandes_urgentes.append(liste_commandes[a]["numero"])
     
     return commandes_urgentes
 
