@@ -1,6 +1,6 @@
 # TP2: Simulateur de Restaurant "Python Bistro" 🍳
 
-#### ⏰ Date de remise : Dimanche 19 octobre 2025 à 23h59
+#### ⏰ Date de remise : Dimanche 12 octobre 2025 à 23h59
 
 ## Objectif
 Ce TP vous permettra d'apprendre la programmation Python à travers la création d'un simulateur de gestion de restaurant. Vous allez découvrir et maîtriser :
@@ -27,18 +27,19 @@ Vous devez compléter les fonctions liées au menu. Le menu est représenté par
 
 Fonctions à compléter (`TODO`) :
 - `analyser_menu(menu)`  
-  - Trouver le plat le plus rentable (rapport `popularité / temps_preparation`, gérer `temps_preparation == 0`).
+  - Trouver le plat le plus rentable (rapport `popularité / temps_preparation`, **gérer `temps_preparation == 0` en l'ignorant, retourner `None` si tous les plats ont temps = 0**).
   - Calculer le prix moyen du menu.
   - Calculer le temps de préparation moyen.
   - Retourner un dictionnaire de statistiques (`'plat_plus_rentable'`, `'prix_moyen'`, `'temps_moyen'`).
+  - **En cas d'égalité de ratio, retourner le premier plat trouvé. Menu vide : retourner `None` pour `plat_plus_rentable`, `0` pour les moyennes.**
 
 - `filtrer_menu_par_categorie(menu, categories)`  
   - Organiser le menu par catégories (ex. `{'entrées': [...], 'plats': [...], 'desserts': [...]}`).
-  - Gérer le cas où des plats n'ont pas de catégorie.
+  - **Gérer le cas où des plats n'ont pas de catégorie : les ignorer silencieusement.**
 
 - `calculer_profit(menu, ventes_jour)`  
   - Calculer le profit total pour la journée : somme de `prix_plat * nombre_ventes` pour chaque plat vendu.
-  - Gérer les plats absents du menu (ignorer/avertir).
+  - **Gérer les plats absents du menu : ignorer ces ventes (pas d'erreur).**
 
 **Exemple :**
 ```python
@@ -50,6 +51,13 @@ menu = {
 }
 ```
 
+**💡 Astuce** : Les dictionnaires peuvent avoir des champs manquants. Utilisez `dict.get('champ', valeur_defaut)` pour éviter les erreurs.
+
+**Exemple :**
+```python
+temps = commande.get('temps_attente', 0)  # 0 si le champ n'existe pas
+vip = commande.get('client_vip', False)   # False par défaut
+```
 ---
 
 ## Exercice 2: File d'attente des commandes (4 points)
@@ -58,11 +66,13 @@ Les commandes arrivent en cuisine et doivent être priorisées. Implémentez les
 Fonctions à compléter (`TODO`) :
 - `calculer_priorite(commande)`  
   - Implémenter la formule : `Score = (temps_attente × 2) + (nombre_items × 1) + (client_vip × 10)` (le booléen `client_vip` vaut 1 si True, 0 sinon).
+  - **Si une commande n'a pas tous les champs requis, utiliser 0 comme valeur par défaut.**
 
 - `trier_commandes(liste_commandes)`  
   - Trier les commandes par priorité décroissante (commandes avec score le plus élevé en premier).
   - Implémenter un algorithme de tri (ex. tri à bulles, insertion, etc.) sans utiliser `sorted()`.
   - Veiller à ne pas modifier la liste originale si cela doit être explicitement évité (faire une copie si nécessaire).
+  - **En cas d'égalité de priorité, conserver l'ordre original des commandes.**
 
 - `estimer_temps_total(liste_commandes_triee)`  
   - Calculer le temps total et le temps moyen pour traiter les commandes.
@@ -80,6 +90,7 @@ Fonctions à compléter (`TODO`) :
 - `verifier_disponibilite(inventaire, recette)`  
   - Vérifier, ingrédient par ingrédient, si l'inventaire suffit pour la recette.
   - Retourner `(peut_preparer: bool, ingredients_manquants: list)`.
+  - **Si un ingrédient requis par une recette n'existe pas dans l'inventaire, le considérer comme ayant une quantité de 0.**
 
 - `mettre_a_jour_inventaire(inventaire, recette, quantite=1)`  
   - Soustraire les quantités utilisées selon `recette`, multipliées par `quantite`.
@@ -115,6 +126,7 @@ Fonctions à compléter (`TODO`) :
 - `marquer_reservation(salle, position, taille_groupe)`  
   - Marquer la table comme réservée : `'R2'` ou `'R4'` selon la table.
   - Faire une copie sûre de la grille si nécessaire.
+  - **Ne modifier que les tables libres (ignorer si la position ne contient pas une table libre).**
 
 ### Partie 2 : Recherche de table (3 points)
 - `calculer_score_table(position, taille_table, taille_groupe, nb_colonnes)`  
@@ -126,6 +138,7 @@ Fonctions à compléter (`TODO`) :
 
 - `trouver_meilleure_table(salle, taille_groupe)`  
   - Parcourir les tables libres (`'L2'` / `'L4'`) et retourner la meilleure `(position, taille_table)`.
+  - **Ne considérer que les tables libres (commençant par 'L'). Si plusieurs tables ont le même score, retourner la première trouvée.**
 
 - `generer_rapport_occupation(salle)`  
   - Compter tables libres, réservées et occupées (`'O2'` / `'O4'`) par capacité (2 et 4).
@@ -141,6 +154,7 @@ Fonctions à compléter (`TODO`) :
   - Rechercher chaque mot-clé et additionner les scores.
   - Produire la liste `mots_trouves`.
   - Borner le score final entre `0` et `10`.
+  - **La recherche de mots-clés doit être insensible à la casse. Un mot-clé correspond s'il est présent dans le commentaire (recherche par substring).**
 
 - `categoriser_commentaires(liste_commentaires, mots_cles)`  
   - Analyser chaque commentaire et le classer :
@@ -156,6 +170,7 @@ Fonctions à compléter (`TODO`) :
 - `generer_rapport_satisfaction(categories, frequence_problemes)`  
   - Calculer la satisfaction moyenne.
   - Calculer la distribution en pourcentages (positifs / neutres / négatifs).
+  - S'il y a plus de commentaires positifs que négatifs, le champ 'points forts' sera simplement la liste ['Service apprécié', 'Qualité reconnue']. Sinon, retournez une liste vide [].
   - Identifier les 3 principaux points d'amélioration (3 mots-clés négatifs les plus fréquents).
 
 - `calculer_tendance(historique_scores)`  
@@ -180,6 +195,40 @@ Créer un mini-jeu console (optionnel) : fonctions `TODO` à compléter :
 - Assurez-vous que vos fonctions ne lèvent pas d'exceptions non gérées pour des entrées similaires aux exemples fournis.
 - Rédigez des messages d'erreur clairs si vous gérez des cas invalides.
 
+---
+## 🚨 Erreurs courantes à éviter
+
+### KeyError lors de l'accès aux dictionnaires
+**Problème** : `KeyError: 'temps_attente'` quand une clé n'existe pas
+
+**Solution** : 
+```python
+# Au lieu de :
+score = commande['temps_attente'] * 2  
+
+# Utilisez :
+score = commande.get('temps_attente', 0) * 2  
+```
+
+### Division par zéro
+**Problème** : `ZeroDivisionError` dans les calculs de ratios
+
+**Solution** :
+```python
+# Vérifiez avant de diviser
+if temps > 0:
+    ratio = popularite / temps
+```
+
+### IndexError avec les listes
+**Problème** : Accès à un index inexistant
+
+**Solution** :
+```python
+# Vérifiez la taille de la liste
+if 0 <= index < len(liste):
+    valeur = liste[index]
+```
 ---
 
 # Barème de correction
@@ -213,8 +262,8 @@ Le barème de correction est le suivant :
 | 4.4 | Recherche de la meilleure table libre (parcours + comparaison de score) (`trouver_meilleure_table`) | 0.75 |
 | 4.5 | Rapport d'occupation correct (comptages et taux d'occupation) (`generer_rapport_occupation`) | 1.0 |
 | **Exercice 5 : Analyse de la satisfaction client** | | **/5** |
-| 5.1 | Analyse d'un commentaire : détection mots-clés, somme des scores, borne 0–10 (`analyser_commentaire`) | 1.0 |
-| 5.2 | Catégorisation correcte des commentaires (positifs ≥7, neutres 4–6, négatifs <4) (`categoriser_commentaires`) | 1.0 |
+| 5.1 | Analyse d'un commentaire : détection mots-clés, somme des scores, borne 0—10 (`analyser_commentaire`) | 1.0 |
+| 5.2 | Catégorisation correcte des commentaires (positifs ≥7, neutres 4—6, négatifs <4) (`categoriser_commentaires`) | 1.0 |
 | 5.3 | Identification des problèmes récurrents dans les commentaires négatifs (`identifier_problemes`) | 1.0 |
 | 5.4 | Génération de rapport : satisfaction moyenne + distribution + points d'amélioration (`generer_rapport_satisfaction`) | 1.0 |
 | 5.5 | Détection correcte de la tendance à partir d'un historique (`calculer_tendance`) | 1.0 |
