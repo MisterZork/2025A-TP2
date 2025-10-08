@@ -32,7 +32,14 @@ def analyser_commentaire(commentaire, mots_cles):
         # D'abord, vérifier la correspondance exacte dans la liste des mots
         # Sinon, vérifier si le mot-clé est le début d'un mot du commentaire (cela permet de trouver "froid" dans "froide" ou "froids"), pour cela utiliser la méthode startswith().
     # Borner le score final entre 0 et 10
-    
+    for mot in mots_commentaire:
+        for i in mots_cles:
+            if mot == i and 0 < score_total < 10:
+                score_total = score_total + mots_cles[i]
+                mots_trouves.append(i)
+            else:
+                continue
+
     return score_total, mots_trouves
 
 
@@ -53,6 +60,17 @@ def categoriser_commentaires(liste_commentaires, mots_cles):
     # TODO: Analyser chaque commentaire
     # Catégoriser selon le score obtenu
     # Stocker le commentaire et son score dans la bonne catégorie
+    for i in range(len(liste_commentaires)):
+         commentaire_tuple = analyser_commentaire(liste_commentaires[i], mots_cles)
+         texte_commentaire = liste_commentaires[i]
+         score = commentaire_tuple[0]
+         print(score)
+         if score >= 7:   
+             categories["positifs"].append((texte_commentaire, score))
+         elif 4 <= score <=6:
+             categories["neutres"].append((texte_commentaire, score))
+         else:
+             categories["negatifs"].append((texte_commentaire, score))
     
     return categories
 
@@ -73,6 +91,12 @@ def identifier_problemes(commentaires_negatifs, mots_cles_negatifs):
     # TODO: Pour chaque commentaire négatif
     # Compter le nombre d'apparition de chaque mot-clé négatif
     # Retourner un dictionnaire trié par fréquence décroissante
+    for commentaire in range(len(commentaires_negatifs)):
+        commentaire_tuple = analyser_commentaire(commentaires_negatifs[commentaire], mots_cles_negatifs )
+        liste_mot_negatifs = commentaire_tuple[1]
+        for i in range(len(liste_mot_negatifs)):
+            frequence_problemes[i] = 0
+
     
     return frequence_problemes
 
