@@ -42,7 +42,7 @@ def analyser_menu(menu):
     # TODO: Calculer le temps de préparation moyen
     somme_temps = 0 
     for f in menu: 
-        somme_temps = somme_temps + menu[k][1]
+        somme_temps = somme_temps + menu[f][1]
     temps_moyen = somme_temps/len(menu)
     stats = {
     "plat_plus_rentable": plat_plus_rentable,

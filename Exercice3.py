@@ -119,7 +119,6 @@ def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
     # Soustraire l'inventaire actuel
     # Optimiser selon le budget disponible (prioriser les ingrédients critiques)
     liste_besoin_achat = []
-    liste_ingredients = []
 
     for plat in menu_recettes:
         for ingredients, quantite in menu_recettes[plat].items():
@@ -127,7 +126,11 @@ def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
             if quantite_ingredient > 0: 
                 besoin_totaux = quantite_ingredient * previsions_ventes[plat]
                 besoin_achat = besoin_totaux - quantite
-            
+                liste_besoin_achat.append({"ingredients": ingredients, "besoin_achat" : besoin_achat})
+                liste_ordonnée = sorted(liste_besoin_achat, key=lambda x: x["besoin_achat"], reverse = True)
+
+
+        
 
 
         

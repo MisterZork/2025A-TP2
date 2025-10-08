@@ -39,7 +39,18 @@ def initialiser_salle(nb_rangees, nb_colonnes, positions_tables):
     # TODO: Créer une grille remplie de 'X' (espaces non disponibles)
     # Puis placer les tables aux positions indiquées
     # Format: 'L2' pour table libre de 2, 'L4' pour table libre de 4
-    
+    for i in range(nb_rangees):
+         rangee = ["X"] * nb_colonnes
+         salle.append(rangee)
+    for i in range(len(positions_tables)):
+        rangee = positions_tables[i][0]
+        colonne = positions_tables[i][1]
+        taille_table = positions_tables[i][2]
+        if taille_table == 2:
+            salle[rangee][colonne] = "L2"
+        else:
+            salle[rangee][colonne] = "L4"
+
     return salle
 
 
@@ -56,10 +67,23 @@ def marquer_reservation(salle, position, taille_groupe):
         list: Salle mise à jour avec 'R2' ou 'R4' pour table réservée
     """
     nouvelle_salle = [rangee[:] for rangee in salle]  # Copie profonde
-    
+
     # TODO: Marquer la table à la position donnée comme réservée (vérifier qu'elle est libre, on pourra utiliser la méthode startswith())
     # 'R2' pour table de 2 réservée, 'R4' pour table de 4
-    
+    nb_colonnes = len(salle[0])
+    nb_rangees = len(salle)
+    rangee_table = position[0]
+    colonne = position[1]
+    if 0 <= position[0] <= nb_rangees and 0 <= position[1] <= nb_colonnes:
+        if nouvelle_salle[rangee_table][colonne].startswith("R"):
+            print("la position demandée est déjà réservée") 
+        else:
+            if taille_groupe <= 2:
+                nouvelle_salle[rangee_table][colonne] = "R2"
+            else: 
+                nouvelle_salle[rangee_table][colonne] = "R4"
+    else: 
+        print("la position demandée n'est pas disponible")
     return nouvelle_salle
 
 
@@ -86,6 +110,18 @@ def calculer_score_table(position, taille_table, taille_groupe, nb_colonnes):
     # - Pénalité: -10 points par place vide (gaspillage)
     # - Bonus fenêtre: +20 points si colonne == 0 ou colonne == nb_colonnes-1
     # - Bonus position: +5 points si rangée < 3 (près de l'entrée)
+    if taille_table < taille_groupe: 
+        return -1 
+    base = 100
+    rangee = position[0]
+    colonne = position[1]
+    if taille_table > taille_groupe: 
+        base = base + ((taille_table - taille_groupe)* - 10)
+    if colonne == 0 or colonne == nb_colonnes - 1:
+        base = base + 20 
+    if  rangee < 3:
+        base = base + 5
+    score = base 
     
     return score
 
@@ -106,6 +142,25 @@ def trouver_meilleure_table(salle, taille_groupe):
     
     # TODO: Parcourir toutes les tables libres ('L2' ou 'L4')
     # Calculer leur score et garder la meilleure
+    nb_colonnes = len(salle[0])
+    for rangee in range(len(salle)):
+        for colonne in range(len(salle[rangee])):
+            if salle[rangee][colonne].startswith("L2"):
+                a = calculer_score_table((rangee,colonne),2, taille_groupe, nb_colonnes)
+                if a > meilleur_score: 
+                    meilleur_score = a
+                    meilleure_position = ((rangee, colonne),2)
+                    meilleure_table = meilleure_position
+            elif salle[rangee][colonne].startswith("L4"):
+                b = calculer_score_table((rangee,colonne), 4, taille_groupe, nb_colonnes)
+                if b > meilleur_score:
+                    meilleur_score = b
+                    meilleure_position = ((rangee,colonne),4)
+                    meilleure_table = meilleure_position
+                else: 
+                    continue
+
+
     
     return meilleure_table
 
@@ -120,6 +175,7 @@ def generer_rapport_occupation(salle):
     Returns:
         dict: Statistiques d'occupation
     """
+
     rapport = {
         'tables_libres_2': 0,
         'tables_libres_4': 0,
@@ -132,7 +188,49 @@ def generer_rapport_occupation(salle):
     
     # TODO: Compter les différents types de tables
     # Calculer le taux d'occupation (réservées + occupées) / total
+    reservees = 0
+    libre = 0 
+    occupees = 0
+    liste_tables_reserves_2 = [] 
+    liste_tables_reserves_4 = []
+    liste_tables_libres_2 = []
+    liste_tables_libres_4 = []
+    liste_tables_occupees_2 = []
+    liste_tables_occupees_4=[]
+    for rangee in range(len(salle)):
+        for colonne in range(len(salle[rangee])):
+            if salle[rangee][colonne].startswith("R2"):
+                liste_tables_reserves_2.append("a")
+                rapport["tables_reservees_2"] = len(liste_tables_reserves_2)
+                reservees = reservees + 1 
+            elif salle[rangee][colonne].startswith("R4"):
+                liste_tables_reserves_4.append("a")
+                rapport["tables_reservees_4"] = len(liste_tables_reserves_4)
+                reservees = reservees + 1 
+            elif salle[rangee][colonne].startswith("L2"):
+                liste_tables_libres_2.append("a")
+                rapport["tables_libres_2"] = len(liste_tables_libres_2)
+                libre = libre + 1 
+            elif salle[rangee][colonne].startswith("L4"):
+                liste_tables_libres_4.append("a")
+                rapport["tables_libres_4"] = len(liste_tables_libres_4)
+                libre = libre + 1 
+            elif salle[rangee][colonne].startswith("O2"):
+                liste_tables_occupees_2.append("a")
+                rapport["tables_occupees_2"] = len(liste_tables_occupees_2)
+                occupees = occupees + 1
+            elif salle[rangee][colonne].startswith("O4"):
+                liste_tables_occupees_4.append("a")
+                rapport["tables_occupees_4"] = len(liste_tables_occupees_4)
+                occupees = occupees + 1 
+    total_table = reservees + occupees + libre
     
+    print(libre)
+    print(occupees)
+    print(reservees)
+    print(total_table)
+    taux_occupation = (reservees + occupees)/total_table
+    rapport["taux_occupation"] = taux_occupation
     return rapport
 
 
