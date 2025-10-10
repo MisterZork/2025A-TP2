@@ -1,7 +1,7 @@
 """
 TP2 - Exercice 1 : Gestion du Menu
 Noms : Hamza Gharbi, Yanis Ben Boudaoud
-Matricules :
+Matricules : 2461307, 
 """
 def analyser_menu(menu):
     """
@@ -92,7 +92,7 @@ def calculer_profit(menu, ventes_jour):
     
     for plat in ventes_jour:
         if plat in menu:
-            profit += menu[plat][0] * ventes_jour[plat]
+            profit += menu[plat][0] * ventes_jour[plat] # Prix * Nb. de ventes
 
     return profit
 
