@@ -61,7 +61,7 @@ def marquer_reservation(salle, position, taille_groupe):
         list: Salle mise à jour avec 'R2' ou 'R4' pour table réservée
     """
     nouvelle_salle = [rangee[:] for rangee in salle]  # Copie profonde
-    
+
     # TODO: Marquer la table à la position donnée comme réservée (vérifier qu'elle est libre, on pourra utiliser la méthode startswith())
     # 'R2' pour table de 2 réservée, 'R4' pour table de 4
     
@@ -144,6 +144,7 @@ def generer_rapport_occupation(salle):
     Returns:
         dict: Statistiques d'occupation
     """
+
     rapport = {
         'tables_libres_2': 0,
         'tables_libres_4': 0,
