@@ -1,16 +1,20 @@
 # TP2: Simulateur de Restaurant "Python Bistro" 🍳
 
-#### ⏰ Date de remise : Dimanche 12 octobre 2025 à 23h59
+⏰ Date de remise : Dimanche 12 octobre 2025 à 23h59
 
 ## Objectif
+
 Ce TP vous permettra d'apprendre la programmation Python à travers la création d'un simulateur de gestion de restaurant. Vous allez découvrir et maîtriser :
+
 - Les structures de contrôle (boucles, conditions)
 - Les structures de données (listes, dictionnaires, tuples)
 - Les algorithmes de base (tri, recherche, optimisation)
 - La manipulation de données complexes
 
 ## Introduction
+
 Félicitations ! Vous venez d'hériter du restaurant familial "Python Bistro". Pour moderniser l'établissement, vous devez créer un système de gestion informatisé qui permettra de :
+
 - Gérer les commandes des clients
 - Optimiser l'inventaire des ingrédients
 - Calculer les profits
@@ -18,14 +22,17 @@ Félicitations ! Vous venez d'hériter du restaurant familial "Python Bistro". P
 - Gérer la satisfaction client
 
 ## Structure du TP
+
 Le TP est divisé en 5 exercices indépendants (+ un bonus optionnel) qui simulent différents aspects de la gestion du restaurant. Chaque exercice contient plusieurs fonctions marquées `# TODO` : **ne modifiez que ces sections**.
 
 ---
 
 ## Exercice 1: Gestion du Menu (3 points)
+
 Vous devez compléter les fonctions liées au menu. Le menu est représenté par un dictionnaire où les clés sont les noms des plats et les valeurs sont des tuples `(prix, temps_preparation, popularité)`.
 
 Fonctions à compléter (`TODO`) :
+
 - `analyser_menu(menu)`  
   - Trouver le plat le plus rentable (rapport `popularité / temps_preparation`, **gérer `temps_preparation == 0` en l'ignorant, retourner `None` si tous les plats ont temps = 0**).
   - Calculer le prix moyen du menu.
@@ -42,6 +49,7 @@ Fonctions à compléter (`TODO`) :
   - **Gérer les plats absents du menu : ignorer ces ventes (pas d'erreur).**
 
 **Exemple :**
+
 ```python
 menu = {
     'Pizza Margherita': (12.50, 15, 8),
@@ -54,16 +62,20 @@ menu = {
 **💡 Astuce** : Les dictionnaires peuvent avoir des champs manquants. Utilisez `dict.get('champ', valeur_defaut)` pour éviter les erreurs.
 
 **Exemple :**
+
 ```python
 temps = commande.get('temps_attente', 0)  # 0 si le champ n'existe pas
 vip = commande.get('client_vip', False)   # False par défaut
 ```
+
 ---
 
 ## Exercice 2: File d'attente des commandes (4 points)
+
 Les commandes arrivent en cuisine et doivent être priorisées. Implémentez les fonctions listées ci-dessous.
 
 Fonctions à compléter (`TODO`) :
+
 - `calculer_priorite(commande)`  
   - Implémenter la formule : `Score = (temps_attente × 2) + (nombre_items × 1) + (client_vip × 10)` (le booléen `client_vip` vaut 1 si True, 0 sinon).
   - **Si une commande n'a pas tous les champs requis, utiliser 0 comme valeur par défaut.**
@@ -84,9 +96,11 @@ Fonctions à compléter (`TODO`) :
 ---
 
 ## Exercice 3: Optimisation de l'inventaire (4 points)
+
 Gérer l'inventaire et préparer des recettes sans ruptures.
 
 Fonctions à compléter (`TODO`) :
+
 - `verifier_disponibilite(inventaire, recette)`  
   - Vérifier, ingrédient par ingrédient, si l'inventaire suffit pour la recette.
   - Retourner `(peut_preparer: bool, ingredients_manquants: list)`.
@@ -114,11 +128,13 @@ Fonctions à compléter (`TODO`) :
 ---
 
 ## Exercice 4: Système de réservation (4 points)
+
 Créer et gérer la salle, réserver des tables et produire des rapports.
 
 Fonctions à compléter (`TODO`) :
 
 ### Partie 1 : Initialisation (2 points)
+
 - `initialiser_salle(nb_rangees, nb_colonnes, positions_tables)`  
   - Créer une grille remplie de `'X'` (espace non disponible).
   - Placer les tables aux positions indiquées en utilisant `'L2'` ou `'L4'` pour tables libres.
@@ -129,6 +145,7 @@ Fonctions à compléter (`TODO`) :
   - **Ne modifier que les tables libres (ignorer si la position ne contient pas une table libre).**
 
 ### Partie 2 : Recherche de table (3 points)
+
 - `calculer_score_table(position, taille_table, taille_groupe, nb_colonnes)`  
   - Retourner `-1` si la table ne convient pas (`taille_table < taille_groupe`).
   - Base : 100 points.
@@ -147,9 +164,11 @@ Fonctions à compléter (`TODO`) :
 ---
 
 ## Exercice 5: Analyse de la satisfaction client (5 points)
+
 Analyser les commentaires clients et produire un rapport.
 
 Fonctions à compléter (`TODO`) :
+
 - `analyser_commentaire(commentaire, mots_cles)`  
   - Rechercher chaque mot-clé et additionner les scores.
   - Produire la liste `mots_trouves`.
@@ -179,7 +198,9 @@ Fonctions à compléter (`TODO`) :
 ---
 
 ## Bonus: Mini-jeu de service (2 points)
+
 Créer un mini-jeu console (optionnel) : fonctions `TODO` à compléter :
+
 - `initialiser_restaurant()` : créer la grille 5x5, placer la cuisine `K` et les tables (`T`).
 - `deplacer_serveur(grille, serveur_pos, direction)` : déplacer le serveur avec bornes.
 - `prendre_commande(...)` et `livrer_commande(...)` : logique de prise et livraison (points).
@@ -189,6 +210,7 @@ Créer un mini-jeu console (optionnel) : fonctions `TODO` à compléter :
 ---
 
 ## Consignes importantes
+
 - **Modifiez uniquement** les sections marquées `# TODO`.
 - N'importe quel import supplémentaire est interdit (ne pas ajouter de librairies externes).
 - Testez votre code avec les exemples fournis dans chaque fichier (`if __name__ == '__main__':`).
@@ -196,12 +218,15 @@ Créer un mini-jeu console (optionnel) : fonctions `TODO` à compléter :
 - Rédigez des messages d'erreur clairs si vous gérez des cas invalides.
 
 ---
+
 ## 🚨 Erreurs courantes à éviter
 
 ### KeyError lors de l'accès aux dictionnaires
+
 **Problème** : `KeyError: 'temps_attente'` quand une clé n'existe pas
 
-**Solution** : 
+**Solution** :
+
 ```python
 # Au lieu de :
 score = commande['temps_attente'] * 2  
@@ -211,9 +236,11 @@ score = commande.get('temps_attente', 0) * 2
 ```
 
 ### Division par zéro
+
 **Problème** : `ZeroDivisionError` dans les calculs de ratios
 
 **Solution** :
+
 ```python
 # Vérifiez avant de diviser
 if temps > 0:
@@ -221,17 +248,20 @@ if temps > 0:
 ```
 
 ### IndexError avec les listes
+
 **Problème** : Accès à un index inexistant
 
 **Solution** :
+
 ```python
 # Vérifiez la taille de la liste
 if 0 <= index < len(liste):
     valeur = liste[index]
 ```
+
 ---
 
-# Barème de correction
+## Barème de correction
 
 Le barème de correction est le suivant :  
 
