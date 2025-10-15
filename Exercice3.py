@@ -15,13 +15,15 @@ def verifier_disponibilite(inventaire, recette):
     """
     peut_preparer = True
     ingredients_manquants = []
-    # TODO: Vérifier pour chaque ingrédient de la recette
-    # s'il est disponible en quantité suffisante dans l'inventaire
+
+    # Vérifier si la recette est faisable selon l'inventaire
     for ing, qte_requise in recette.items():
-        qte_dispo = inventaire.get(ing,0)
+        qte_dispo = inventaire.get(ing, 0)
         if qte_dispo < qte_requise:
             ingredients_manquants.append(ing)
+
     peut_preparer = (len(ingredients_manquants) == 0)
+    
     return peut_preparer, ingredients_manquants
 
 
@@ -39,14 +41,11 @@ def mettre_a_jour_inventaire(inventaire, recette, quantite=1):
     """
     nouvel_inventaire = inventaire.copy()
     
-    # TODO: Soustraire les ingrédients utilisés de l'inventaire
-    # Multiplier par la quantité si plusieurs portions
+    # Mise à jour d'un nouveau inventaire en retirant les ingrédients
     for ingredient, qt_utilisée in recette.items(): 
-        if ingredient in nouvel_inventaire:
-            quantité_finale = inventaire.get(ingredient) - (qt_utilisée*quantite)
-            nouvel_inventaire[ingredient] = max(0,quantité_finale)
-        else: 
-            continue
+        if ingredient in nouvel_inventaire: # On considère que "verifier_disponibilite" va éviter d'avoir un inventaire négatif
+            quantité_finale = inventaire.get(ingredient) - (qt_utilisée * quantite)
+            nouvel_inventaire[ingredient] = quantité_finale
 
     return nouvel_inventaire
 
@@ -63,14 +62,13 @@ def generer_alertes_stock(inventaire, seuil=10):
         dict: {ingredient: (quantité_actuelle, quantité_à_commander)}
     """
     alertes = {}
-    quantite_standard = 50  # Quantité standard à commander
+    quantite_suggestion = 50 # Quantité conseillé 
     
-    # TODO: Identifier les ingrédients avec stock < seuil
-    # Suggérer une quantité à commander (ex: 50 unités - stock_actuel)
-    for ings, quantité in inventaire.items(): 
+    # Identifier les ingrédients avec stock < seuil
+    for ing, quantité in inventaire.items(): 
         if quantité < seuil: 
-            a_commander = max(0, quantite_standard - quantité)
-            alertes[ings] = (quantité ,a_commander)
+            a_commander = max(0, quantite_suggestion - quantité)
+            alertes[ing] = (quantité, a_commander)
     return alertes
 
 
@@ -87,16 +85,16 @@ def calculer_commandes_possibles(inventaire, menu_recettes):
     """
     commandes_possibles = {}
 
-    # TODO: Pour chaque plat, calculer combien de portions peuvent être faites
+    # Calculer combien de portions peuvent être faites
     # Le minimum est déterminé par l'ingrédient le plus limitant (on pourra initialiser une variable nb_portions = infini dans un premier temps)
-    for plats in menu_recettes:
-        min_portion = float("inf")
-        for ingredients, quantite in inventaire.items():
-            besoin_par_portion = menu_recettes[plats].get(ingredients, 0)
+    for plat in menu_recettes:
+        min_portion = float("inf") # Valeur qui va servir quand on va utiliser la fonction min (Pour initialiser la 1ère valeur)
+        for ingredient in inventaire:
+            besoin_par_portion = menu_recettes[plat].get(ingredient, 0) # Récupère les ingrédients nécessaires, remplacé par 0 si c'est inexistant
             if besoin_par_portion > 0: 
-                portion = inventaire[ingredients]//besoin_par_portion
-                min_portion = min(portion,min_portion)
-                commandes_possibles[plats] = min_portion 
+                portion = inventaire[ingredient] // besoin_par_portion
+                min_portion = min(portion, min_portion)
+                commandes_possibles[plat] = min_portion 
     return commandes_possibles
 
 def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
@@ -114,24 +112,34 @@ def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
     """
     liste_achats = {}
     cout_ingredients = {'tomates': 0.5, 'fromage': 2.0, 'pâtes': 1.0, 'sauce': 1.5, 'pain': 0.8}
+    budget_restant = budget
     
-    # TODO: Calculer les besoins totaux selon les prévisions
-    # Soustraire l'inventaire actuel
-    # Optimiser selon le budget disponible (prioriser les ingrédients critiques)
-    liste_besoin_achat = []
-    liste_ingredients = []
-
-    for plat in menu_recettes:
-        for ingredients, quantite in menu_recettes[plat].items():
-            quantite_ingredient = menu_recettes[plat].get(ingredients,0)
-            if quantite_ingredient > 0: 
-                besoin_totaux = quantite_ingredient * previsions_ventes[plat]
-                besoin_achat = besoin_totaux - quantite
-            
-
-
+    # Pour chaque plat prévu, vérifier et acheter les ingrédients manquants
+    for plat, qte_plat in previsions_ventes.items():
+        recette = menu_recettes.get(plat, {})
         
-       
+        # Pour chaque ingrédient du plat
+        for ingredient, qte_par_portion in recette.items():
+            qte_necessaire = qte_par_portion * qte_plat
+            qte_disponible = inventaire.get(ingredient, 0) + liste_achats.get(ingredient, 0)
+            manque = max(0, qte_necessaire - qte_disponible)
+            
+            # Si ingrédient manquant, essayer de l'acheter
+            if manque > 0:
+                cout_unitaire = cout_ingredients.get(ingredient, float("inf"))
+                cout_total = manque * cout_unitaire
+                
+                if cout_total <= budget_restant:
+                    # Acheter la quantité manquante complète
+                    liste_achats[ingredient] = liste_achats.get(ingredient, 0) + manque
+                    budget_restant -= cout_total
+                else:
+                    # Acheter ce que le budget permet
+                    qte_possible = int(budget_restant // cout_unitaire)
+                    if qte_possible > 0:
+                        liste_achats[ingredient] = liste_achats.get(ingredient, 0) + qte_possible
+                        budget_restant -= qte_possible * cout_unitaire
+
     return liste_achats
 
 if __name__ == '__main__':

@@ -18,14 +18,14 @@ def calculer_priorite(commande):
         int: Score de priorité
     """
     score = 0
-    temps_attente, nombre_items, client_vip = 0, 0, 0
-    if "temps_attente" in commande:
-        temps_attente = commande["temps_attente"]
-    if "nombre_items" in commande:
-        nombre_items = commande["nombre_items"]
-    # On peut éviter client_vip, pcq ça vaudra 0 dans tout les cas
 
-    score = (temps_attente * 2) + (nombre_items) + (client_vip * 10) # Note : bool * int = int | On oublie le * 1
+    # dict.get permet de mettre une valeur par défaut quand KeyError arrive
+    temps_attente = commande.get("temps_attente", 0)
+    nombre_items = commande.get("nombre_items", 0)
+    client_vip = int(commande.get("client_vip", False)) # False = 0, True = 1
+
+    # Calcul du score
+    score = (temps_attente * 2) + (nombre_items * 1) + (client_vip * 10)
     return score
 
 
