@@ -1,7 +1,6 @@
 """
 TP2 - Exercice 1 : Gestion du Menu
 Noms : Hamza Gharbi, Yanis Ben Boudaoud
-Matricules : 2461307, 
 """
 def analyser_menu(menu):
     """
