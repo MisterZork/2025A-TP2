@@ -1,5 +1,6 @@
 """
 TP2 - Exercice 5 : Analyse de la satisfaction client
+Noms : Hamza Gharbi, Yanis Ben Boudaoud
 """
 
 def analyser_commentaire(commentaire, mots_cles):
@@ -28,17 +29,17 @@ def analyser_commentaire(commentaire, mots_cles):
     # On divise en mots pour une recherche plus précise
     mots_commentaire = commentaire_modifie.split()
     
-    #TODO : Rechercher chaque mot-clé dans le commentaire
-        # D'abord, vérifier la correspondance exacte dans la liste des mots
-        # Sinon, vérifier si le mot-clé est le début d'un mot du commentaire (cela permet de trouver "froid" dans "froide" ou "froids"), pour cela utiliser la méthode startswith().
-    # Borner le score final entre 0 et 10
+    # TODO : Rechercher chaque mot-clé dans le commentaire et vérifier si le mot-clé est le début d'un mot du commentaire
     for mot in mots_commentaire:
         for i in mots_cles:
-            if mot == i and 0 < score_total < 10:
-                score_total = score_total + mots_cles[i]
+            if mot.startswith(i): # Vérifie si le début du mot dans le commentaire 
+                score_total += mots_cles[i] # correspond à un mot-clé
                 mots_trouves.append(i)
-            else:
-                continue
+
+    if score_total > 10: # Check des limites à la fin entre [0, 10]
+        score_total = 10
+    if score_total < 0:
+        score_total = 0
 
     return score_total, mots_trouves
 
@@ -57,20 +58,18 @@ def categoriser_commentaires(liste_commentaires, mots_cles):
     """
     categories = {'positifs': [], 'neutres': [], 'negatifs': []}
     
-    # TODO: Analyser chaque commentaire
-    # Catégoriser selon le score obtenu
-    # Stocker le commentaire et son score dans la bonne catégorie
-    for i in range(len(liste_commentaires)):
-         commentaire_tuple = analyser_commentaire(liste_commentaires[i], mots_cles)
-         texte_commentaire = liste_commentaires[i]
+    # TODO: Analyser chaque commentaire d'une liste donnée
+    for commentaire_texte in liste_commentaires:
+         commentaire_tuple = analyser_commentaire(commentaire_texte, mots_cles)
          score = commentaire_tuple[0]
-         print(score)
-         if score >= 7:   
-             categories["positifs"].append((texte_commentaire, score))
+
+        # Classement des commentaires selon leur scores
+         if score >= 7:
+             categories["positifs"].append((commentaire_texte, score))
          elif 4 <= score <=6:
-             categories["neutres"].append((texte_commentaire, score))
-         else:
-             categories["negatifs"].append((texte_commentaire, score))
+             categories["neutres"].append((commentaire_texte, score))
+         else: # donc < 4
+             categories["negatifs"].append((commentaire_texte, score))
     
     return categories
 
@@ -88,16 +87,21 @@ def identifier_problemes(commentaires_negatifs, mots_cles_negatifs):
     """
     frequence_problemes = {}
     
-    # TODO: Pour chaque commentaire négatif
-    # Compter le nombre d'apparition de chaque mot-clé négatif
-    # Retourner un dictionnaire trié par fréquence décroissante
-    for commentaire in range(len(commentaires_negatifs)):
-        commentaire_tuple = analyser_commentaire(commentaires_negatifs[commentaire], mots_cles_negatifs )
-        liste_mot_negatifs = commentaire_tuple[1]
-        for i in range(len(liste_mot_negatifs)):
-            frequence_problemes[i] = 0
+    # TODO: Compter le nombre de mots clés négatifs dans les commentaires négatifs
+    mots_negatifs = []
 
-    
+    # Ajouter les mots dans le dictionnaire
+    for commentaire in commentaires_negatifs:
+        commentaire_tuple = analyser_commentaire(commentaire, mots_cles_negatifs)
+        mots_negatifs = commentaire_tuple[1]
+        for mot in mots_negatifs:
+            if mot not in frequence_problemes:
+                frequence_problemes.setdefault(mot, 0)
+            frequence_problemes[mot] += 1
+
+    # Trier le dictionnaire en ordre décroissante
+    frequence_problemes = dict(sorted(frequence_problemes.items(), key= lambda x: x[1], reverse=True))
+
     return frequence_problemes
 
 
@@ -118,10 +122,51 @@ def generer_rapport_satisfaction(categories, frequence_problemes):
         'points_forts': [],
         'points_amelioration': [],
     }
-    
-    # TODO: Calculer la satisfaction moyenne
-    # Calculer la distribution (% positifs, neutres, négatifs)
-    # Identifier les 3 principaux points d'amélioration (les 3 problèmes les plus fréquents)
+
+    # TODO: Calculer la satisfaction moyenne et la distribution
+    compteur_negatifs, compteur_neutres, compteur_positifs = 0, 0, 0
+    score_negatifs, score_neutres, score_positifs = 0, 0, 0
+
+    for cat in categories:
+        rapport['distribution'].setdefault(cat, 0.0)
+        match cat:
+            case "negatifs":
+                compteur_negatifs = len(categories[cat])
+                rapport["distribution"][cat] = compteur_negatifs
+                cat_cache = [i for i in categories[cat]]
+                for score in cat_cache:
+                    score_cache = score[1]
+                    score_negatifs += score_cache
+                
+            case "neutres":
+                compteur_neutres = len(categories[cat])
+                rapport["distribution"][cat] = compteur_neutres
+                cat_cache = [i for i in categories[cat]]
+                for score in cat_cache:
+                    score_cache = score[1]
+                    score_neutres += score_cache
+
+            case "positifs":
+                compteur_positifs = len(categories[cat])
+                rapport["distribution"][cat] = compteur_positifs
+                cat_cache = [i for i in categories[cat]]
+                for score in cat_cache:
+                    score_cache = score[1]
+                    score_positifs += score_cache
+            
+    compteur_total = compteur_negatifs + compteur_neutres + compteur_positifs
+    score_total = score_negatifs + score_neutres + score_positifs
+
+    # Ajout de chaque élément dans le rapport
+    rapport['satisfaction_moyenne'] = score_total / compteur_total
+
+    for k in rapport['distribution']:
+        rapport["distribution"][k] *= (100/compteur_total) # Transformation en pourcentage
+
+    if compteur_positifs > compteur_negatifs:
+        rapport['points_forts'] = ['Service apprécié', 'Qualité reconnue']
+
+    rapport['points_amelioration'].extend([k for k in frequence_problemes.keys()][:3])
     
     return rapport
 
@@ -139,10 +184,16 @@ def calculer_tendance(historique_scores):
     tendance = 'stable'
     
     # TODO: Analyser l'évolution des scores
-    # Si augmentation constante: 'amélioration'
-    # Si diminution constante: 'dégradation'
-    # Sinon: 'stable'
-    
+    liste_tendance = []
+    for score in historique_scores:
+        liste_tendance.append(score[1])
+
+    if liste_tendance == sorted(liste_tendance): # Ordre croissant = Augmentation
+        tendance = "amélioration"
+
+    if liste_tendance == sorted(liste_tendance, reverse=True): # Ordre décroissant = Diminution
+        tendance = "dégradation"
+
     return tendance
 
 

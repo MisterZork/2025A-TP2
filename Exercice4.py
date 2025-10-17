@@ -1,5 +1,6 @@
 """
 TP2 - Exercice 4 : Système de réservation
+Noms : Hamza Gharbi, Yanis Ben Boudaoud
 """
 
 # Fonction fournie - ne pas modifier
@@ -36,14 +37,11 @@ def initialiser_salle(nb_rangees, nb_colonnes, positions_tables):
     """
     salle = []
     
-    # TODO: Créer une grille remplie de 'X' (espaces non disponibles)
-    # Puis placer les tables aux positions indiquées
-    # Format: 'L2' pour table libre de 2, 'L4' pour table libre de 4
-    
+    # TODO: Créer une grille remplie de 'X' (espaces non disponibles), puis placer les tables    
     salle = [["X" for _ in range(nb_colonnes)] for _ in range(nb_rangees)]
     for position in positions_tables:
         pos_r, pos_c = position[0], position[1]
-        salle[pos_r][pos_c] = f"L{position[2]}"        
+        salle[pos_r][pos_c] = f"L{position[2]}" # Place L2 ou L4 selon sa taille       
 
     return salle
 
@@ -63,12 +61,10 @@ def marquer_reservation(salle, position, taille_groupe):
     nouvelle_salle = [rangee[:] for rangee in salle]  # Copie profonde
 
     # TODO: Marquer la table à la position donnée comme réservée (vérifier qu'elle est libre, on pourra utiliser la méthode startswith())
-    # 'R2' pour table de 2 réservée, 'R4' pour table de 4
-    
     pos_r, pos_c = position[0], position[1]
     val_table = nouvelle_salle[pos_r][pos_c]
     if val_table[-1] == str(taille_groupe):
-        nouvelle_salle[pos_r][pos_c] = f"R{taille_groupe}"
+        nouvelle_salle[pos_r][pos_c] = f"R{taille_groupe}"  # 'R2' pour table de 2 réservée, 'R4' pour table de 4
 
     return nouvelle_salle
 
@@ -158,8 +154,8 @@ def generer_rapport_occupation(salle):
     # TODO: Compter les différents types de tables
     # Calculer le taux d'occupation (réservées + occupées) / total
     table_compteur = 0
-    for pos_r, rangee in enumerate(salle):
-        for pos_c, place in enumerate(salle[pos_r]):
+    for rangee in salle:
+        for place in rangee:
             if not place.startswith("X"):
                 table_compteur += 1
                 key_number = 2 if place.endswith("2") else 4
@@ -172,7 +168,6 @@ def generer_rapport_occupation(salle):
 
     rapport["taux_occupation"] = (table_reservees + table_occupees) / (table_compteur)
 
-    
     return rapport
 
 

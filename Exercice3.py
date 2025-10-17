@@ -1,5 +1,7 @@
 """
 TP2 - Exercice 3 : Optimisation de l'inventaire
+Noms : Hamza Gharbi, Yanis Ben Boudaoud
+Commentaire d'élèves -> L'exercice est plus difficile que le reste, surtout l'optimisation à la fin
 """
 
 def verifier_disponibilite(inventaire, recette):
@@ -16,7 +18,7 @@ def verifier_disponibilite(inventaire, recette):
     peut_preparer = True
     ingredients_manquants = []
 
-    # Vérifier si la recette est faisable selon l'inventaire
+    # TODO: Vérifier si la recette est faisable selon l'inventaire
     for ing, qte_requise in recette.items():
         qte_dispo = inventaire.get(ing, 0)
         if qte_dispo < qte_requise:
@@ -41,7 +43,7 @@ def mettre_a_jour_inventaire(inventaire, recette, quantite=1):
     """
     nouvel_inventaire = inventaire.copy()
     
-    # Mise à jour d'un nouveau inventaire en retirant les ingrédients
+    # TODO: Mise à jour d'un nouveau inventaire en retirant les ingrédients
     for ingredient, qt_utilisée in recette.items(): 
         if ingredient in nouvel_inventaire: # On considère que "verifier_disponibilite" va éviter d'avoir un inventaire négatif
             quantité_finale = inventaire.get(ingredient) - (qt_utilisée * quantite)
@@ -62,9 +64,10 @@ def generer_alertes_stock(inventaire, seuil=10):
         dict: {ingredient: (quantité_actuelle, quantité_à_commander)}
     """
     alertes = {}
-    quantite_suggestion = 50 # Quantité conseillé 
     
-    # Identifier les ingrédients avec stock < seuil
+    # TODO: Identifier les ingrédients avec stock < seuil
+    quantite_suggestion = 50 # Quantité conseillé 
+
     for ing, quantité in inventaire.items(): 
         if quantité < seuil: 
             a_commander = max(0, quantite_suggestion - quantité)
@@ -85,7 +88,7 @@ def calculer_commandes_possibles(inventaire, menu_recettes):
     """
     commandes_possibles = {}
 
-    # Calculer combien de portions peuvent être faites
+    # TODO: Calculer combien de portions peuvent être faites
     # Le minimum est déterminé par l'ingrédient le plus limitant (on pourra initialiser une variable nb_portions = infini dans un premier temps)
     for plat in menu_recettes:
         min_portion = float("inf") # Valeur qui va servir quand on va utiliser la fonction min (Pour initialiser la 1ère valeur)
@@ -112,9 +115,11 @@ def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
     """
     liste_achats = {}
     cout_ingredients = {'tomates': 0.5, 'fromage': 2.0, 'pâtes': 1.0, 'sauce': 1.5, 'pain': 0.8}
-    budget_restant = budget
     
+    # TODO: Optimiser la liste d'achat selon un budget et la prévision de ventes
     # Pour chaque plat prévu, vérifier et acheter les ingrédients manquants
+    budget_restant = budget
+
     for plat, qte_plat in previsions_ventes.items():
         recette = menu_recettes.get(plat, {})
         
@@ -134,7 +139,7 @@ def optimiser_achats(inventaire, menu_recettes, previsions_ventes, budget):
                     liste_achats[ingredient] = liste_achats.get(ingredient, 0) + manque
                     budget_restant -= cout_total
                 else:
-                    # Acheter ce que le budget permet
+                    # Acheter ce que le budget permet s'il reste de l'argent
                     qte_possible = int(budget_restant // cout_unitaire)
                     if qte_possible > 0:
                         liste_achats[ingredient] = liste_achats.get(ingredient, 0) + qte_possible

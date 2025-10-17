@@ -1,7 +1,6 @@
 """
 TP2 - Exercice 2 : File d'attente des commandes
 Noms : Hamza Gharbi, Yanis Ben Boudaoud
-Matricules : 2461307, 
 """
 
 def calculer_priorite(commande):
@@ -19,6 +18,7 @@ def calculer_priorite(commande):
     """
     score = 0
 
+    # TODO: Implémenter l'algorithme de priorité
     # dict.get permet de mettre une valeur par défaut quand KeyError arrive
     temps_attente = commande.get("temps_attente", 0)
     nombre_items = commande.get("nombre_items", 0)
@@ -40,6 +40,7 @@ def trier_commandes(liste_commandes):
     Returns:
         list: Liste triée par priorité décroissante
     """
+    # TODO: Implémenter un algorithme de tri
     # On va utiliser le tri à bulles, grâce à sa simplicité et le fait qu'on ne cherche pas de gain de performances
     for i in range(len(liste_commandes)): # Vérifie chaque élément de la liste
         for j in range(len(liste_commandes) - i - 1): # Note : À chaque itération, i éléments sera complètement sortés
@@ -59,10 +60,11 @@ def estimer_temps_total(liste_commandes_triee):
         dict: Temps total et temps moyen par commande
     """
     temps_stats = {}
+
+    # TODO: Calculer le temps moyen et total
     temps_total = 0 # Au cas-où d'une liste vide
     temps_moyen = 0
 
-    # Calcul du temps moyen et total
     for i in range(len(liste_commandes_triee)):
         temps_total += liste_commandes_triee[i]["nombre_items"] * 3 # 3 minutes / items
     temps_moyen = (temps_total/len(liste_commandes_triee))
@@ -88,7 +90,7 @@ def identifier_commandes_urgentes(liste_commandes, seuil_attente=30):
     """
     commandes_urgentes = []
     
-    # Identifier les commandes avec temps_attente > seuil
+    # TODO: Identifier les commandes avec temps_attente > seuil
     for a in range(len(liste_commandes)):
         temps_attente = liste_commandes[a]["temps_attente"] 
         if temps_attente > seuil_attente: 

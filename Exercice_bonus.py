@@ -1,5 +1,7 @@
 """
 TP2 - BONUS : Mini-jeu de service au restaurant
+Noms : Hamza Gharbi, Yanis Ben Boudaoud
+Commentaire d'élève -> Changé le format AZERTY à QWERTY pour le déplacement
 """
 
 import random
@@ -33,7 +35,7 @@ def afficher_restaurant(grille, serveur_pos, score, commandes_en_attente):
                 print(case, end=' ')
         print()
     
-    print("\nCommandes: z↑ s↓ q← d→ | p:prendre l:livrer")
+    print("\nCommandes: w↑ s↓ a← d→ | p:prendre l:livrer")
     print("=" * 30)
 
 
@@ -47,14 +49,17 @@ def initialiser_restaurant():
     grille = []
     tables_positions = []
     
-    # TODO: Créer une grille 5x5
-    # 'K' = cuisine (position 0,2)
-    # 'T' = table vide
-    # '!' = table avec client en attente
-    # '_' = espace vide
-    # Placer 4 tables aux positions: (1,1), (1,3), (3,1), (3,3)
+    # TODO: Créer un restaurant
+    # 1. Grille 5x5
+    grille = [["_" for _ in range(5)] for _ in range(5)]
+
+    # 2. Positionner les tables et la cuisine à la bonne position
+    grille[0][2] = "K"
+    grille[1][1], grille[1][3], grille[3][1], grille[3][3] = "T", "T", "T", "T"
     
+    # 3. Préparer les valeurs de sorties
     position_cuisine = (0, 2)
+    tables_positions = [(1, 1), (1, 3), (3, 1), (3, 3)]
     
     return grille, position_cuisine, tables_positions
 
@@ -66,7 +71,7 @@ def deplacer_serveur(grille, serveur_pos, direction):
     Args:
         grille (list): Grille du restaurant
         serveur_pos (tuple): Position actuelle
-        direction (str): 'z', 's', 'q', ou 'd'
+        direction (str): 'w', 's', 'a', ou 'd'
     
     Returns:
         tuple: Nouvelle position ou position actuelle si mouvement invalide
@@ -74,9 +79,22 @@ def deplacer_serveur(grille, serveur_pos, direction):
     nouvelle_pos = serveur_pos
     
     # TODO: Calculer la nouvelle position selon la direction
-    # Vérifier que la position est valide (dans la grille)
-    # Retourner la nouvelle position
-    
+    grille_max_x, grille_max_y = len(grille[0]) - 1, len(grille) - 1
+
+    match direction:
+        case "w":
+            if nouvelle_pos[0] > 0:
+                nouvelle_pos = (nouvelle_pos[0] - 1, nouvelle_pos[1])
+        case "s":
+            if nouvelle_pos[0] < grille_max_y:
+                nouvelle_pos = (nouvelle_pos[0] + 1, nouvelle_pos[1])
+        case "a":
+            if nouvelle_pos[1] > 0:
+                nouvelle_pos = (nouvelle_pos[0], nouvelle_pos[1] - 1)
+        case "d":
+            if nouvelle_pos[1] < grille_max_x:
+                nouvelle_pos = (nouvelle_pos[0], nouvelle_pos[1] + 1)
+
     return nouvelle_pos
 
 
@@ -100,6 +118,7 @@ def prendre_commande(grille, serveur_pos, commandes_en_attente):
     # TODO: Vérifier si une table avec client '!' est adjacente
     # Si oui: changer '!' en 'T', ajouter position à commandes_en_attente
     # Gagner 10 points
+
     
     return succes, nouvelle_grille, nouvelles_commandes, points
 
@@ -139,9 +158,11 @@ def generer_nouveaux_clients(grille, tables_positions, probabilite=0.3):
         list: Nouvelle grille avec clients
     """
     nouvelle_grille = [rangee[:] for rangee in grille]
-    
-    # TODO: Pour chaque table vide 'T'
-    # Avec une certaine probabilité, placer un client '!'
+
+    # TODO: Transformer une table T en ! aléatoirement
+    for position in tables_positions:
+        if nouvelle_grille[position[0]][position[1]] == "T" and random.random() <= probabilite:
+            nouvelle_grille[position[0]][position[1]] = "!"
     
     return nouvelle_grille
 
@@ -167,6 +188,36 @@ def jouer():
     input()
     
     # TODO: Implémenter la boucle de jeu
+    while tours < max_tours:
+        # Affichage de l'état
+        afficher_restaurant(grille, serveur_pos, score, commandes_en_attente)
+        
+        # Prend les entrées
+        touche = input("-> ").lower()
+        print(touche)
+        while touche not in ["w", "a", "s", "d", "p", "l"]:
+            print("Touche invalide, veuillez réessayer")
+            touche = input("-> ").lower()
+
+        # Vérifie et effectue la bonne touche
+        match touche:
+            case ("w" | "a" | "s" | "d"):
+                serveur_pos = deplacer_serveur(grille, serveur_pos, touche)
+
+            case "p":
+                prendre_commande(grille, serveur_pos, commandes_en_attente)
+            
+            case "l":
+                livrer_commande(grille, serveur_pos, serveur_porte_commande, commandes_pretes)
+
+        # Génère un nouveau client aux 3 tours
+        if tours % 3 == 0:
+            generer_nouveaux_clients(grille, tables_pos)
+
+        
+
+        tours += 1
+
     # while tours < max_tours:
     #     1. Afficher l'état
     #     2. Lire l'entrée utilisateur
@@ -202,10 +253,9 @@ if __name__ == '__main__':
     print("\nTest déplacement:")
     pos_test = (2, 2)
     nouvelle_pos = deplacer_serveur(grille, pos_test, 'd')
-    print(f"Position (2,2) + droite → {nouvelle_pos}")
+    print(f"Position (2, 2) + droite → {nouvelle_pos}")
     
-    # Décommenter pour jouer
-    # print("\n" + "="*30)
-    # print("Appuyez sur Entrée pour lancer le jeu...")
-    # input()
-    # score_final = jouer()
+    print("\n" + "=" * 30)
+    print("Appuyez sur Entrée pour lancer le jeu...")
+    input()
+    score_final = jouer()

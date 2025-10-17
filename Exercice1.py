@@ -16,6 +16,8 @@ def analyser_menu(menu):
             - 'temps_moyen': Le temps de préparation moyen
     """
     stats = {}
+
+    # TODO: Calcul du plat le plus rentable
     meilleur_ratio, plat_plus_rentable = 0, None
     somme, prix_moyen = 0, 0
     somme_temps, temps_moyen = 0, 0
@@ -64,6 +66,8 @@ def filtrer_menu_par_categorie(menu, categories):
         dict: Menu organisé par catégories
     """
     menu_filtre = {}
+
+    # TODO: Organiser les plats par catégorie
     liste_cat = []
 
     for plat in categories:
@@ -89,6 +93,7 @@ def calculer_profit(menu, ventes_jour):
     """
     profit = 0
     
+    # TODO: Calculer le profit total
     for plat in ventes_jour:
         if plat in menu:
             profit += menu[plat][0] * ventes_jour[plat] # Prix * Nb. de ventes
